@@ -1,1 +1,3 @@
 基于leveldb的文件系统实现
+
+本机提供FUSE接口，web端提供libevent接口
