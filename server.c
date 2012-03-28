@@ -7,15 +7,47 @@
 ============================================================================*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/queue.h>
+#include <sys/wait.h>
+#include <ctype.h>
+#include <string.h>
+#include <getopt.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <time.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <assert.h>
+#include <signal.h>
+#include <pthread.h>
+#include <iostream>
+#include <err.h>
+#include <event.h>
+#include <evhttp.h>
+
+#include "leveldb/db.h" 
+#include "leveldb/comparator.h"
+#include "leveldb/write_batch.h"
+#include "leveldb/cache.h"
+
+//#include "utils.h"
+#include "server.h"
 
 int settings_cache = 100;
 char settings_dataname[1024];
+char* pidfile;
 
 void show_help()
 {
 	fprintf(stdout, "this is show help()\n");
 	//XXX
-	return 0;
 }
 
 static void kill_signal_worker(const int sig)

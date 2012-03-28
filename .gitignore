@@ -1,0 +1,11 @@
+*.o
+*.gcno
+*.gcov
+*.gch
+*.c~
+*.gcda
+*.gcno
+*.swp
+tags
+README~
+a.out
