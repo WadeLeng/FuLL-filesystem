@@ -36,13 +36,11 @@
 #include "leveldb/comparator.h"
 #include "leveldb/write_batch.h"
 #include "leveldb/cache.h"
-
-//#include "utils.h"
 #include "server.h"
 
 int settings_cache = 100;
 char settings_dataname[1024];
-char* pidfile;
+char* pidfile = "/tmp/server.pid";
 
 void show_help()
 {
@@ -180,7 +178,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Error: %s:%d\n", __FILE__, __LINE__);
 		return -1;
 	}
-	if (worker_process_pid > 0)
+	if (worker_process_pid > 0)	//parent process
 	{
 		kill_signal_register(&kill_signal_master);
 		while (1)
