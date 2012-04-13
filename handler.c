@@ -24,7 +24,6 @@ void http_handler(struct evhttp_request *req, void *arg)
 	const char *opt = evhttp_find_header(&http_query, "opt");
 	const char *key = evhttp_find_header(&http_query, "key");
 	const char *value = evhttp_find_header(&http_query, "value");
-	//const char *exptime = evhttp_find_header(&http_query, "exptime");
 
 	/* 处理输出header头 */
 	evhttp_add_header(req->output_headers, "Content-Type", "text/plain");
@@ -35,8 +34,6 @@ void http_handler(struct evhttp_request *req, void *arg)
 	/* 解析参数 */
 	if (opt)
 	{
-		if (exptime == NULL) exptime = "0";
-
 		if (strcmp(opt, "put") == 0 && key != NULL)
 		{
 			/* 优先接收POST正文信息 */
@@ -45,7 +42,7 @@ void http_handler(struct evhttp_request *req, void *arg)
 			{
 				char *buffer_data = (char*) calloc(buffer_data_len, sizeof(char));
 				memcpy(buffer_data, EVBUFFER_DATA(req->input_buffer), buffer_data_len);
-				put(key, buffer_data, strlen(buffer_data));//FIXME: \0
+				put(key, buffer_data, strlen(buffer_data));
 				evhttp_add_header(req->output_headers, "Key", key);
 				evbuffer_add_printf(buf, "%s", "SERVER_SET_OK");
 				free(buffer_data);
@@ -75,7 +72,7 @@ void http_handler(struct evhttp_request *req, void *arg)
 				evhttp_add_header(req->output_headers, "Key", key);
 				for (i = 0; i < length; i++)
 					evbuffer_add_printf(buf, "%c", value[i]);
-				//free(value);
+				free(value);
 			}
 			else
 				evbuffer_add_printf(buf, "%s", "SERVER_GET_ERROR");
