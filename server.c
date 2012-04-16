@@ -38,6 +38,7 @@
 #include "leveldb/cache.h"
 #include "server.h"
 #include "utils.h"
+#include "handler.h"
 
 char* pidfile = "/tmp/server.pid";
 

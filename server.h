@@ -38,9 +38,9 @@
 
 static int server_settings_cache = 100;
 static char server_settings_dataname[1024];
-
 static leveldb::DB* db;
 static leveldb::Options options;
+
 leveldb::Status opendb();
 leveldb::Status put(const char* key, const char* value, int value_size);
 leveldb::Status get(const char* key, char* value, int* value_size);
