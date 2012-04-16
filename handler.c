@@ -61,7 +61,6 @@ void http_handler(struct evhttp_request *req, void *arg)
 			}
 			else
 				evbuffer_add_printf(buf, "%s", "SERVER_PUT_ERROR");
-
 		}
 		else if (strcmp(opt, "get") == 0 && key != NULL)
 		{

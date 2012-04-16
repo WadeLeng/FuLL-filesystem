@@ -1,7 +1,6 @@
 #ifndef KVFS_SERVER
 #define KVFS_SERVER
 
-#include "config.h"
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/queue.h>
@@ -36,21 +35,15 @@
 #include <evhttp.h>
 
 #include "leveldb/db.h"
-#include "utils.h"
 
-typedef struct iteminfo 
-{
-	char* key;
-	char* value;
-	int value_size;
-	time_t exptime;
-}iteminfo;//XXX
+static int server_settings_cache = 100;
+static char server_settings_dataname[1024];
 
 static leveldb::DB* db;
 static leveldb::Options options;
 leveldb::Status opendb();
-leveldb::Status put(const iteminfo item);
-const iteminfo get(const char* key);
+leveldb::Status put(const char* key, const char* value, int value_size);
+leveldb::Status get(const char* key, char* value, int* value_size);
 leveldb::Status clear(const char* key);
 leveldb::Status clearall();
 void http_handler(struct evhttp_request *req, void *arg);

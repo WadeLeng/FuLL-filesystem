@@ -37,9 +37,8 @@
 #include "leveldb/write_batch.h"
 #include "leveldb/cache.h"
 #include "server.h"
+#include "utils.h"
 
-int settings_cache = 100;
-char settings_dataname[1024];
 char* pidfile = "/tmp/server.pid";
 
 void show_help()
@@ -93,7 +92,7 @@ int httpserver_init(char *listen, int port, int timeout)
 
 int main(int argc, char *argv[])
 {
-	char *listen = "0.0.0.0";
+	char* listen = "0.0.0.0";
 	int port = 12345;
 	int daemon = false;
 	int timeout = 60;
@@ -127,7 +126,7 @@ int main(int argc, char *argv[])
 				timeout = atoi(optarg);
 				break;
 			case 'c':
-				settings_cache = atoi(optarg) > 0 ? atoi(optarg) : 100;
+				server_settings_cache = atoi(optarg) > 0 ? atoi(optarg) : 100;
 				break;
 			case 'i':
 				pidfile = strdup(optarg);
@@ -149,7 +148,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	
-	sprintf(settings_dataname, "%s/server.db", datapath);
+	sprintf(server_settings_dataname, "%s/server.db", datapath);
 
 	if (!opendb().ok())
 	{
@@ -192,7 +191,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	kill_singal_register(&kill_signal_worker);
+	kill_signal_register(&kill_signal_worker);
 
 	httpserver_init(listen, port, timeout);
 
