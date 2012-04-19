@@ -64,17 +64,18 @@ void http_handler(struct evhttp_request *req, void *arg)
 		}
 		else if (strcmp(opt, "get") == 0 && key != NULL)
 		{
-			char *value = NULL;
+			char *buf_value = NULL;
 			int i, length = 0;
-			if (get(key, value, &length).ok())
+			if (get(key, &buf_value, &length).ok())
 			{
 				evhttp_add_header(req->output_headers, "Key", key);
-				for (i = 0; i < length; i++)
-					evbuffer_add_printf(buf, "%c", value[i]);
-				free(value);
+				evbuffer_add_printf(buf, "%s", buf_value);
+				free(buf_value);
 			}
 			else
+			{
 				evbuffer_add_printf(buf, "%s", "SERVER_GET_ERROR");
+			}
 		}
 		else if (strcmp(opt, "delete") == 0 && key != NULL)
 		{
@@ -82,13 +83,6 @@ void http_handler(struct evhttp_request *req, void *arg)
 				evbuffer_add_printf(buf, "%s", "SERVER_DELETE_ERROR");
 			else
 				evbuffer_add_printf(buf, "%s", "SERVER_DELETE_OK");
-		}
-		else if (strcmp(opt, "deleteall") == 0)
-		{
-			if (!clearall().ok())
-				evbuffer_add_printf(buf, "%s", "SERVER_DELETE_ALL_ERROR");
-			else
-				evbuffer_add_printf(buf, "%s", "SERVER_DELETE_ALL_OK");
 		}
 		else
 		{

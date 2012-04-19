@@ -41,6 +41,8 @@
 #include "handler.h"
 
 char* pidfile = "/tmp/server.pid";
+int server_settings_cache = 100;
+char server_settings_dataname[1024];
 
 void show_help()
 {
