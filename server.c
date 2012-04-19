@@ -1,10 +1,3 @@
-/*============================================================================
-# Author: Wade Leng
-# E-mail: wade.hit@gmail.com
-# Last modified: 2012-03-27 15:29
-# Filename: server.c
-# Description: 
-============================================================================*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>

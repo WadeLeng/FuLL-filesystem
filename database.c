@@ -58,3 +58,4 @@ leveldb::Status clear(const char* key)
 	return s;
 }
 
+// TODO: other interface
