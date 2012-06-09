@@ -89,13 +89,14 @@ int httpserver_init(char *listen, int port, int timeout)
 int main(int argc, char *argv[])
 {
 	char* listen = "0.0.0.0";
+	char* root_dir = NULL;
 	int port = 12345;
 	int daemon = false;
 	int timeout = 60;
 	char *datapath;
 	int c;
 
-	while ((c = getopt(argc, argv, "l:p:x:t:c:m:i:a:dh")) != -1)
+	while ((c = getopt(argc, argv, "l:p:x:t:c:m:i:a:r:dh")) != -1)
 	{
 		switch (c)
 		{
@@ -126,6 +127,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'i':
 				pidfile = strdup(optarg);
+				break;
+			case 'r':
+				root_dir = strdup(optarg);
 				break;
 			case 'd':
 				daemon = true;
