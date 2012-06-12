@@ -1,5 +1,5 @@
-#ifndef KVFS_SERVER
-#define KVFS_SERVER
+#ifndef FULLFS_SERVER
+#define FULLFS_SERVER
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -35,6 +35,8 @@
 #include <evhttp.h>
 
 #include "leveldb/db.h"
+#include "leveldb/options.h"
+#include "database.h"
 
 extern int server_settings_cache;
 extern char server_settings_dataname[1024];

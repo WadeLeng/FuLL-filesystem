@@ -42,6 +42,7 @@ leveldb::Status get(const char* key, char** value, int* value_size)
 	info = value_str.c_str();
 	sscanf(info, "%d #", value_size);
 	printf("%d\n", *value_size);
+	if (**value == NULL) return s;
 	*value = (char*) malloc(*value_size * sizeof(char));
 	for (i = 0; i < *value_size; i++)
 		(*value)[i] = info[i + 12];

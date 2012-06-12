@@ -1,14 +1,15 @@
-# Makefile for httpsqs
-CC=g++
-CFLAGS=-L/usr/local/libevent-2.0.10-stable/lib/ -levent -I./leveldb/include -L./leveldb -lleveldb -I/usr/local/libevent-2.0.10-stable/include/ -lz  -lrt -lpthread -lm -lc -g 
+CC = g++ -O2
+CFLAGS=-L/usr/local/libevent-2.0.10-stable/lib/ -levent -I./leveldb/include -L./leveldb -lleveldb -I/usr/local/libevent-2.0.10-stable/include/ -lz  -lrt -lpthread -lm -lc -g `pkg-config fuse --cflags --libs`
+SRC = server.c utils.c fuse.c handler.c database.c
+HEADERS = server.h utils.h fuse.h handler.h database.h
+OBJ = full_server
 
-server: server.c handler.c utils.c database.c
-	$(CC) -o server server.c handler.c utils.c database.c $(CFLAGS)
-	@echo "server build complete."
-	@echo ""
+$(OBJ): $(SRC) $(HEADERS)
+	$(CC) $(CFLAGS) -o $(OBJ) $(SRC)
+	@echo "FuLL_server build complete."
 
-clean: server
-	rm -f server
+all:
+	make $(OBJ)
 
-install: server
-	install $(INSTALL_FLAGS) -m 4755 -o root server $(DESTDIR)/usr/bin
+clean: 
+	rm -f $(OBJ)
