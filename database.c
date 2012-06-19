@@ -1,9 +1,17 @@
+/*============================================================================
+# Author: Wade Leng
+# E-mail: wade.hit@gmail.com
+# Last modified: 2012-06-19 19:11
+# Filename: database.c
+# Description: 
+============================================================================*/
 #include <iostream>
 #include <pthread.h>
+#include <stdlib.h>
+
 #include "leveldb/db.h"
-#include "leveldb/comparator.h"
-#include "leveldb/write_batch.h"
 #include "leveldb/cache.h"
+#include "database.h"
 #include "server.h"
 
 using namespace std;
@@ -13,9 +21,9 @@ static pthread_mutex_t db_lock;
 leveldb::Status opendb()
 {
 	pthread_mutex_init(&db_lock, NULL);
-	options.create_if_missing = true;
-	options.block_cache = leveldb::NewLRUCache(server_settings_cache * 1048576);//100MB cache
-	leveldb::Status status = leveldb::DB::Open(options, server_settings_dataname, &db);
+	full_options.create_if_missing = true;
+	full_options.block_cache = leveldb::NewLRUCache(server_settings_cache * 1048576);//100MB cache
+	leveldb::Status status = leveldb::DB::Open(full_options, server_settings_dataname, &db);
 	if (!status.ok())
 		cout << status.ToString() << endl;
 	return status;
@@ -39,11 +47,15 @@ leveldb::Status get(const char* key, char** value, int* value_size)
 	int i;
 
 	leveldb::Status s = db->Get(leveldb::ReadOptions(), key, &value_str);
+	if (!s.ok())
+	{
+		*value = NULL;
+		*value_size = 0;
+		return s;
+	}
 	info = value_str.c_str();
 	sscanf(info, "%d #", value_size);
-	printf("%d\n", *value_size);
-	if (**value == NULL) return s;
-	*value = (char*) malloc(*value_size * sizeof(char));
+	*value = (char*) malloc((*value_size) * sizeof(char) + 1);
 	for (i = 0; i < *value_size; i++)
 		(*value)[i] = info[i + 12];
 	(*value)[*value_size] = '\0';

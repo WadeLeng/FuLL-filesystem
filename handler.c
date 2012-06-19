@@ -1,8 +1,45 @@
+/*============================================================================
+# Author: Wade Leng
+# E-mail: wade.hit@gmail.com
+# Last modified: 2012-06-19 19:14
+# Filename: handler.c
+# Description: 
+============================================================================*/
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/queue.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <getopt.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <time.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <assert.h>
+#include <signal.h>
+#include <stdbool.h>
+#include <pthread.h>
+#include <iostream>
+
 #include <err.h>
 #include <event.h>
 #include <evhttp.h>
 
-#include "server.h"
+
+#include "database.h"
 
 void http_handler(struct evhttp_request *req, void *arg)
 {
@@ -96,4 +133,22 @@ void http_handler(struct evhttp_request *req, void *arg)
 	/* 释放内存 */
 	evhttp_clear_headers(&http_query);
 	evbuffer_free(buf);
+}
+
+int httpserver_init(char *listen, int port, int timeout)
+{
+	struct evhttp *httpd;
+	event_init();
+	httpd = evhttp_start(listen, port);
+	if (httpd == NULL)
+	{
+		fprintf(stderr, "Error: Unable to listen on %s:%d\n\n", listen, port);
+		kill(0, SIGTERM);
+		exit(-1);
+	}
+	evhttp_set_timeout(httpd, timeout);
+	evhttp_set_gencb(httpd, http_handler, NULL);
+	event_dispatch();
+	evhttp_free(httpd);
+	return 0;
 }
