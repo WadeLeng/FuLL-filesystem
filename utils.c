@@ -37,7 +37,7 @@ void show_help()
 		"This is free software, and you are welcome to modify and redistribute it under the New BSD License\n"
 		"\n"
 		"-l <ip_addr>  interface to listen on, default is 0.0.0.0\n"
-		"-p <num>      TCP port number to listen on (default: 11211)\n"
+		"-p <num>      TCP port number to listen on (default: 12345)\n"
 		"-x <path>     database directory \n"
 		"-t <second>   keep-alive timeout for an http request (default: 60)\n"
 		"-c <num>      the maximum cached data nodes to be cached (default: 100MB)\n"
