@@ -3,7 +3,7 @@
 # E-mail: wade.hit@gmail.com
 # Last modified: 2012-06-19 19:11
 # Filename: database.c
-# Description: 
+# Description: 封装leveldb的接口，提供put，get，delete接口
 ============================================================================*/
 #include <iostream>
 #include <pthread.h>
@@ -33,6 +33,7 @@ leveldb::Status put(const char* key, const char* value, int value_size)
 {
 	pthread_mutex_lock(&db_lock);
 	char *info = (char*) calloc(value_size + 12, sizeof(char));
+	/* <value_size # value>一起作为value插入到db */
 	sprintf(info, "%-11d#%s", value_size, value);
 	leveldb::Status s = db->Put(leveldb::WriteOptions(), key, info);
 	free(info);
@@ -54,7 +55,9 @@ leveldb::Status get(const char* key, char** value, int* value_size)
 		return s;
 	}
 	info = value_str.c_str();
+	/* 先提取出value_size */
 	sscanf(info, "%d #", value_size);
+	/* 在get外面free */
 	*value = (char*) malloc((*value_size) * sizeof(char) + 1);
 	for (i = 0; i < *value_size; i++)
 		(*value)[i] = info[i + 12];

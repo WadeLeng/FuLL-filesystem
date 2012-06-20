@@ -3,7 +3,7 @@
 # E-mail: wade.hit@gmail.com
 # Last modified: 2012-06-19 19:16
 # Filename: utils.h
-# Description: 
+# Description: utils
 ============================================================================*/
 #ifndef FULLFS_UTILS
 #define FULLFS_UTILS

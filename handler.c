@@ -3,7 +3,7 @@
 # E-mail: wade.hit@gmail.com
 # Last modified: 2012-06-19 19:14
 # Filename: handler.c
-# Description: 
+# Description: httpserver_init启动libevent, http_handler处理请求函数
 ============================================================================*/
 #include <sys/types.h>
 #include <sys/time.h>
@@ -41,8 +41,10 @@
 
 #include "database.h"
 
+/* 事件处理函数 */
 void http_handler(struct evhttp_request *req, void *arg)
 {
+	/* 只处理GET POST */
 	if (EVHTTP_REQ_GET != req->type && EVHTTP_REQ_POST != req->type)
 	{
 		evhttp_send_error(req, 502, "Bad Gateway");
@@ -79,6 +81,7 @@ void http_handler(struct evhttp_request *req, void *arg)
 			{
 				char *buffer_data = (char*) calloc(buffer_data_len, sizeof(char));
 				memcpy(buffer_data, EVBUFFER_DATA(req->input_buffer), buffer_data_len);
+				/* put 到leveldb 中 */
 				put(key, buffer_data, strlen(buffer_data));
 				evhttp_add_header(req->output_headers, "Key", key);
 				evbuffer_add_printf(buf, "%s", "SERVER_SET_OK");
@@ -138,17 +141,23 @@ void http_handler(struct evhttp_request *req, void *arg)
 int httpserver_init(char *listen, int port, int timeout)
 {
 	struct evhttp *httpd;
+	/* 初始化监听IP和端口 */
 	event_init();
 	httpd = evhttp_start(listen, port);
 	if (httpd == NULL)
 	{
 		fprintf(stderr, "Error: Unable to listen on %s:%d\n\n", listen, port);
+		/* 给进程组所有进程发送终止信号 */
 		kill(0, SIGTERM);
 		exit(-1);
 	}
+	/* 设置HTTP连接超时时间 */
 	evhttp_set_timeout(httpd, timeout);
+	/* 设置请求到达后的回调函数 */
 	evhttp_set_gencb(httpd, http_handler, NULL);
+	/* libevnet 循环处理事件 */
 	event_dispatch();
+	/* 释放资源 */
 	evhttp_free(httpd);
 	return 0;
 }
