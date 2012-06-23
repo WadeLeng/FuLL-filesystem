@@ -34,7 +34,7 @@ void create_multilayer_dir(char *dir)
 void show_help()
 {
 	char *help_msg = (char*) "--------------------------------------------------------------------------------------------------\n"
-		"FUSE + libevent + leveldb filesystem-----Full_fs v1.0\n\n"
+		"FUSE + libevent + leveldb filesystem-----FuLL filesystem v1.0\n\n"
 		"This is free software, and you are welcome to modify and redistribute it under the New BSD License\n"
 		"\n"
 		"-l <ip_addr>  interface to listen on, default is 0.0.0.0\n"
@@ -46,9 +46,8 @@ void show_help()
 		"-r <root_dir> the filesystem root dir\n"
 		"-d            run as a daemon\n"
 		"-h            print this help and exit\n\n"
-		"Use command \"killall -9 full_server\", \"pkill -9 full_server\" to stop Full_fs.\n"
+		"Use command \"killall -9 full_server\", \"pkill -9 full_server\" to stop FuLL filesystem.\n"
 		"Use command \"fusermount -u <root_dir>\" to unmount filesystem.\n"
-		"\n"
 		"--------------------------------------------------------------------------------------------------\n"
 		"\n";
 	fprintf(stderr, help_msg, strlen(help_msg));
