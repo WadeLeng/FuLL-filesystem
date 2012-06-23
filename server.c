@@ -400,9 +400,6 @@ int main(int argc, char *argv[])
 	}
 
 	/* 写进程ID到pidfile */
-	FILE *fp_pidfile = fopen(pidfile, "w");
-	fprintf(fp_pidfile, "%d\n", getpid());
-	fclose(fp_pidfile);
 
 	/* 派生工作进程 */
 	pid_t worker_process_pid = fork();
@@ -431,6 +428,10 @@ int main(int argc, char *argv[])
 
 	/* 处理kill信号 */
 	kill_signal_register(&kill_signal_worker);
+
+	FILE *fp_pidfile = fopen(pidfile, "w");
+	fprintf(fp_pidfile, "%d\n", getpid());
+	fclose(fp_pidfile);
 
 	/* FUSE线程启动 */
 	pthread_t pid;

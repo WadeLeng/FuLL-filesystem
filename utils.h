@@ -10,5 +10,6 @@
 
 void create_multilayer_dir(char* dir);
 void show_help();
+char *urldecode(char *input_str);
 
 #endif

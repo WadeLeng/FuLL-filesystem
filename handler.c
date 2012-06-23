@@ -40,6 +40,7 @@
 
 
 #include "database.h"
+#include "utils.h"
 
 /* 事件处理函数 */
 void http_handler(struct evhttp_request *req, void *arg)
@@ -55,6 +56,7 @@ void http_handler(struct evhttp_request *req, void *arg)
 
 	/* 分析URL参数 */
 	char *decode_uri = strdup((char*) evhttp_request_uri(req));
+	decode_uri = urldecode(decode_uri);
 	struct evkeyvalq http_query;
 	evhttp_parse_query(decode_uri, &http_query);
 	free(decode_uri);
@@ -79,8 +81,9 @@ void http_handler(struct evhttp_request *req, void *arg)
 			int buffer_data_len = EVBUFFER_LENGTH(req->input_buffer);
 			if (buffer_data_len > 0)
 			{
-				char *buffer_data = (char*) calloc(buffer_data_len, sizeof(char));
+				char *buffer_data = (char*) calloc(buffer_data_len, sizeof(char) + 1);
 				memcpy(buffer_data, EVBUFFER_DATA(req->input_buffer), buffer_data_len);
+				buffer_data[buffer_data_len] = '\0';
 				/* put 到leveldb 中 */
 				put(key, buffer_data, strlen(buffer_data));
 				evhttp_add_header(req->output_headers, "Key", key);

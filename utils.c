@@ -6,6 +6,7 @@
 # Description: 
 ============================================================================*/
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -46,9 +47,48 @@ void show_help()
 		"-d            run as a daemon\n"
 		"-h            print this help and exit\n\n"
 		"Use command \"killall -9 full_server\", \"pkill -9 full_server\" to stop Full_fs.\n"
+		"Use command \"fusermount -u <root_dir>\" to unmount filesystem.\n"
 		"\n"
 		"--------------------------------------------------------------------------------------------------\n"
 		"\n";
 	fprintf(stderr, help_msg, strlen(help_msg));
 }
 
+char *urldecode(char *input_str) 
+{
+	int len = strlen(input_str);
+	char *str = strdup(input_str);
+	
+    char *dest = str; 
+    char *data = str; 
+
+    int value; 
+    int c; 
+
+    while (len--) { 
+        if (*data == '+') 
+            *dest = ' '; 
+ 
+        else if (*data == '%' && len >= 2 && isxdigit((int) *(data + 1)) && isxdigit((int) *(data + 2))) 
+        { 
+            c = ((unsigned char *)(data+1))[0]; 
+            if (isupper(c)) 
+                c = tolower(c); 
+            value = (c >= '0' && c <= '9' ? c - '0' : c - 'a' + 10) * 16; 
+            c = ((unsigned char *)(data+1))[1]; 
+            if (isupper(c)) 
+               c = tolower(c); 
+            value += c >= '0' && c <= '9' ? c - '0' : c - 'a' + 10; 
+
+            *dest = (char)value ; 
+            data += 2; 
+            len -= 2; 
+		} else {
+            *dest = *data; 
+	    }
+        data++; 
+        dest++; 
+    } 
+    *dest = '\0'; 
+    return str; 
+}
