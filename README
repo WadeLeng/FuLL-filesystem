@@ -15,6 +15,7 @@ value = bar的数据。使用http://IP:Port/?opt=put&key=foo&value=bar
     Contents of the dirctory tree is below.
     ./		- sources
     ./doc	- documents
+	./test	- test program
 
 
     e-mail: wade.hit@gmail.com
