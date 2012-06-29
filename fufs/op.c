@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>    
 #include <errno.h>
-
+/*对日志的操作，删除文件时设标志位flag为0，写文件时更改文件大小*/
 int op_setattr(const char* org_path, u_fs_file_directory* attr)
 {
 	int res;
@@ -19,16 +19,16 @@ int op_setattr(const char* org_path, u_fs_file_directory* attr)
 	content = malloc(sizeof(u_fs_disk_block)); 	
 	path = strdup(org_path);	
 	p=path;
-	if (!p){
+	if (!p){/*无足够内存*/
 		res = -1;
 		goto exit;
 	}
 	p++;
 	q = strchr(p, '/');		
 	if( q != NULL ){
-		*q = '\0'; 
+		*q = '\0';/*指向目录名*/ 
 		q++;
-		p=q;      
+		p=q;/*指向文件名*/      
 		if(op_open(path,a)==-1){
 			res = -ENOENT;
 			goto exit;
@@ -85,7 +85,7 @@ exit:
 	free(content);
 	return res;			
 }
-
+/*返回所打开文件或目录的日志*/
 int op_open(const char * org_path, u_fs_file_directory *attr){
 		
 	char *p,*q,*path;
@@ -97,12 +97,12 @@ int op_open(const char * org_path, u_fs_file_directory *attr){
 	path = strdup(org_path);
 	p=path;		
 
-	if(op_read_blk(0,content)==-1)
+	if(op_read_blk(0,content)==-1)/*读超级块*/
 		goto err; 	      	
     sb_record=(sb*)content;    
     start_blk=sb_record->first_blk;
 
-    if(strcmp(org_path,"/")==0){ 
+    if(strcmp(org_path,"/")==0){ /*打开根目录*/
 		attr->flag=2;
 		attr->nStartBlock=start_blk;
 		goto ok;
@@ -182,7 +182,7 @@ err:
     	return -1;
 
 }
-
+/*统一创建目录和文件*/
 int op_create(const char* org_path, int flag){
 	long blk;
 	char *p,*q,*path;
@@ -335,7 +335,7 @@ new_blk:
 	op_write_blk(blk,content);
 	goto exit;
 }
-
+/*统一删除文件和目录，自动释放相应数据块，设日志flag为0*/
 int op_rm(const char *org_path,int flag)
 {
 	u_fs_file_directory *attr=malloc(sizeof(u_fs_file_directory));
@@ -415,7 +415,7 @@ noEmpty:
     return 0;
 
 }
-
+/*遍历块，返回块的状态*/
 int op_read_blk(long blk,u_fs_disk_block * content){
 	
 	FILE* fp;

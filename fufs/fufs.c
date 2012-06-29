@@ -9,7 +9,7 @@
 
 #include "fufs.h"
 #include "op.h"
-
+/*根据路径判断是目录还是文件，flag为2为目录，flag为1为文件，目录返回权限，文件返回大小和权限*/
 static int u_fs_getattr(const char *path, struct stat *stbuf)
 {
 
@@ -31,7 +31,7 @@ static int u_fs_getattr(const char *path, struct stat *stbuf)
 	return 0;
 
 }
-
+/*根据路径确认为目录并列出所含内容*/
 static int u_fs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
                          off_t offset, struct fuse_file_info *fi)
 {
@@ -61,7 +61,6 @@ static int u_fs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 		}		
         if (dirent->flag !=0 && filler(buf, name, NULL, 0))
             break;
-
 		dirent++;
 		position+=sizeof(u_fs_file_directory);
 	}
@@ -86,25 +85,25 @@ static int u_fs_open(const char *path, struct fuse_file_info *fi)
     return 0;
    
 }
-
+/*向根目录添加新的目录*/
 static int u_fs_mkdir(const char *path, mode_t mode)
 {
 	int res=op_create(path, 2);
 	return res;
 }
-
+/*删除目录*/
 static int u_fs_rmdir(const char *path)
 {
 	int res=op_rm(path,2);
     return res;
 }
-
+/*向子目录添加文件*/
 static int u_fs_mknod(const char *path, mode_t mode, dev_t rdev)
 {
 	int res=op_create(path, 1);
 	return res;
 }
-
+/*读取文件内容*/
 static int u_fs_read(const char *path, char *buf, size_t size, off_t offset,
                       struct fuse_file_info *fi)
 {
@@ -147,7 +146,7 @@ static int u_fs_read(const char *path, char *buf, size_t size, off_t offset,
 	free(attr);
     return size;
 }
-
+/*向文件写数据*/
 static int u_fs_write(const char *path, const char *buf, size_t size,
                      off_t offset, struct fuse_file_info *fi)
 {
@@ -170,7 +169,7 @@ static int u_fs_write(const char *path, const char *buf, size_t size,
 	int total=0;
 	long* next_blk=malloc(sizeof(long));
 	int num;
-
+/*寻找所写的文件在存储块的位置*/
 	while(1){
 		if( op_read_blk(start_blk, content)==-1){
 			size=-errno;
@@ -191,7 +190,7 @@ static int u_fs_write(const char *path, const char *buf, size_t size,
 	total+=ret;
 	size-=ret;
 	if(size>0){
-
+/*寻找未被使用的块存放数据*/
  		num = op_search_free_blk( size/MAX_DATA_IN_BLOCK+1,next_blk);
 		if( num == -1)
 			return -errno;
@@ -213,6 +212,7 @@ static int u_fs_write(const char *path, const char *buf, size_t size,
 				op_write_blk(*next_blk,content);
 				*next_blk=*next_blk+1;
 			}
+			/*文件删除时，释放块空间并标记为未使用*/
 			if(size==0)
 				break;
 			num = op_search_free_blk( size/MAX_DATA_IN_BLOCK+1,next_blk);
@@ -247,7 +247,7 @@ exit:
 
 	return size;
 }
-
+/*删除文件*/
 static int u_fs_unlink(const char *path)
 {
 	int res=op_rm(path,1);
@@ -263,7 +263,7 @@ static int u_fs_flush (const char * path, struct fuse_file_info * fi)
 {
 	return 0;
 }
-
+/*使用文件系统前对系统进行的初始化*/
 void * u_fs_init (struct fuse_conn_info *conn){
 	
 	FILE * fp=NULL;
